@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Document Chatbot (Groq API)</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f4f6f8;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        header {
+            background: #4a90e2;
+            color: white;
+            padding: 15px;
+            font-size: 20px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .upload-section {
+            background: white;
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .upload-section input[type=file] {
+            border: 1px solid #ccc;
+            padding: 6px;
+            border-radius: 5px;
+        }
+
+        .upload-section button {
+            background: #4a90e2;
+            color: white;
+            border: none;
+            padding: 8px 14px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+
+        .upload-section button:hover {
+            background: #357ABD;
+        }
+
+        .chat-container {
+            flex: 1;
+            padding: 15px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .message {
+            max-width: 70%;
+            padding: 10px;
+            margin: 6px 0;
+            border-radius: 10px;
+            line-height: 1.4;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        .user {
+            background: #DCF8C6;
+            align-self: flex-end;
+        }
+
+        .bot {
+            background: white;
+            border: 1px solid #ddd;
+            align-self: flex-start;
+        }
+
+        .input-section {
+            background: white;
+            padding: 10px;
+            border-top: 1px solid #ddd;
+            display: flex;
+            gap: 10px;
+        }
+
+        .input-section input[type=text] {
+            flex: 1;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .input-section button {
+            background: #4a90e2;
+            color: white;
+            border: none;
+            padding: 8px 14px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+
+        .input-section button:hover {
+            background: #357ABD;
+        }
+
+        @keyframes fadeIn {
+            from {opacity: 0; transform: translateY(5px);}
+            to {opacity: 1; transform: translateY(0);}
+        }
+    </style>
+</head>
+<body>
+    <header>📄 Multi-Doc Chatbot with Memory (Groq API)</header>
+
+    <input type="hidden" id="sessionId" value="{{ session_id }}">
+
+    <div class="upload-section">
+        <input type="file" id="fileInput">
+        <button onclick="uploadFile()">Upload</button>
+    </div>
+
+    <div class="chat-container" id="chatBox"></div>
+
+    <div class="input-section">
+        <input type="text" id="question" placeholder="Ask a question...">
+        <button onclick="askQuestion()">Send</button>
+    </div>
+
+    <script>
+        function uploadFile() {
+            let file = document.getElementById("fileInput").files[0];
+            let formData = new FormData();
+            formData.append("file", file);
+            fetch("/upload", { method: "POST", body: formData })
+                .then(res => res.json())
+                .then(data => alert(data.message || data.error));
+        }
+
+        function askQuestion() {
+            let question = document.getElementById("question").value;
+            let sessionId = document.getElementById("sessionId").value;
+            if (!question.trim()) return;
+
+            addMessage(question, "user");
+            document.getElementById("question").value = "";
+
+            fetch("/ask", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ question: question, session_id: sessionId })
+            })
+            .then(res => res.json())
+            .then(data => {
+                addMessage(data.answer || data.error, "bot");
+            });
+        }
+
+        function addMessage(text, sender) {
+            let chatBox = document.getElementById("chatBox");
+            let msgDiv = document.createElement("div");
+            msgDiv.className = `message ${sender}`;
+            msgDiv.innerText = text;
+            chatBox.appendChild(msgDiv);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+    </script>
+</body>
+</html>

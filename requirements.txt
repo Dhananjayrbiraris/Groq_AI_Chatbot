@@ -1,0 +1,7 @@
+flask
+python-dotenv
+chromadb
+sentence-transformers
+groq
+PyPDF2
+CD
