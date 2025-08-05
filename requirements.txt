@@ -5,3 +5,6 @@ sentence-transformers
 groq
 PyPDF2
 CD
+pandas
+numpy
+requests
