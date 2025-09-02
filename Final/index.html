@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Predictiv Chatbot</title>  
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <header>
+        <a href="/" class="logo-link">
+            <img src="/static/logo.svg" alt="Logo" class="logo">
+            <span class="app-name">Predictiv Chatbot</span>
+        </a>
+
+        <div class="header-controls">
+            <div class="mcp-toggle" onclick="toggleMcpPanel()">
+                <i class="fas fa-puzzle-piece"></i>
+                <span>MCP Tools</span>
+            </div>
+
+            <button class="btn btn-outline rag-toggle" onclick="toggleRagModal()">
+                <i class="fas fa-file-alt"></i>
+                <span>Document Analysis</span>
+            </button>
+
+            <div class="web-search-toggle">
+                <label class="switch">
+                    <input type="checkbox" id="webSearchToggle" checked>
+                    <span class="slider round"></span>
+                </label>
+                <span class="toggle-label">Web Search</span>
+                <span class="search-status" id="searchStatus">ON</span>
+            </div>
+            
+            <button class="btn btn-outline" onclick="clearChat()">
+                <i class="fas fa-trash-alt"></i>
+                <span>Clear</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- MCP Modal -->
+    <div id="mcpModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeMcpModal()">&times;</span>
+            <h3>Available MCP Tools</h3>
+            <div id="mcpToolsList" class="mcp-tools-list">
+                <!-- MCP tools will be populated here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- RAG Modal -->
+    <div id="ragModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeRagModal()">&times;</span>
+            <h3>Document Analysis (RAG)</h3>
+            
+            <div class="rag-options">
+                <div class="rag-option">
+                    <h4>Upload File</h4>
+                    <label for="fileUpload" class="file-upload-label">
+                        <i class="fas fa-upload"></i>
+                        <span>Choose File</span>
+                        <input type="file" id="fileUpload" accept=".txt,.pdf,.csv,.json,.doc,.docx" style="display: none;">
+                    </label>
+                    <p class="file-types">Supports: TXT, PDF, CSV, JSON, DOC, DOCX</p>
+                    <div id="fileName" class="file-name-display"></div>
+                </div>
+                
+                <div class="rag-option">
+                    <h4>Or Enter URL</h4>
+                    <div class="url-input-group">
+                        <input type="text" id="urlInput" placeholder="https://example.com/document">
+                        <button class="btn btn-primary" onclick="processUrl()">Process URL</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="ragStatus" class="rag-status"></div>
+            
+            <div id="uploadedFiles" class="uploaded-files">
+                <h4>Processed Documents</h4>
+                <div id="processedFilesList"></div>
+            </div>
+            
+            <div class="rag-actions">
+                <button class="btn btn-primary" onclick="processSelectedFile()" id="processButton" disabled>
+                    <i class="fas fa-cog"></i>
+                    Process Document
+                </button>
+                <button class="btn btn-outline" onclick="closeRagModal()">
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <input type="hidden" id="sessionId" value="{{ session_id }}">
+
+    <div class="chat-container" id="chatBox">
+        <div class="empty-state" id="emptyState">
+            <i class="fas fa-comments"></i>
+            <h3>Start chatting with AI + Web Search</h3>
+            <p>Ask anything and get answers with real-time web search</p>
+            <div class="suggestions">
+                <div class="suggestion-chip" onclick="insertSuggestion('What is the latest news about AI?')">AI News</div>
+                <div class="suggestion-chip" onclick="insertSuggestion('Explain quantum computing')">Quantum Computing</div>
+                <div class="suggestion-chip" onclick="insertSuggestion('Best programming languages in 2025')">Programming</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="input-section">
+        <div class="input-wrapper">
+            <input type="text" id="question" placeholder="Ask anything..." 
+                   onkeydown="handleKeyPress(event)">
+            <div class="input-actions">
+                <button onclick="insertSampleQuestion()" title="Sample question">
+                    <i class="fas fa-lightbulb"></i>
+                </button>
+                <button onclick="clearInput()" title="Clear input">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        </div>
+        <button class="send-btn" onclick="askQuestionStream()">
+            <i class="fas fa-paper-plane"></i>
+            <span class="send-text">Send</span>
+        </button>
+    </div>
+
+    <script src="/static/js/script.js"></script>
+</body>
+</html>

@@ -1,0 +1,16 @@
+your-chatbot-project/
+│
+├── app.py                 # Main Flask application
+├── utils.py               # Core utilities with LangChain/RAG
+├── requirements.txt       # Dependencies
+├── .env                  # Environment variables
+├── chroma_db/            # Chroma vector database (auto-created)
+│   └── ...
+├── static/               # Static assets
+│   ├── css/
+│   │   └── style.css
+│   ├── js/
+│   │   └── script.js
+│   └── logo.svg
+└── templates/            # HTML templates
+    └── index.html
